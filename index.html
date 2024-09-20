@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script type="module" src="register.js" defer></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function() {
+      emailjs.init("Qiky1PSEsGRcpn5Rq"); // Replace with your EmailJS public key
+    })();
+  </script>
   <title>Happy School Sign Up</title>
   <style>
     body {
@@ -15,6 +21,38 @@
       height: 100vh;
       margin: 0;
     }
+    select {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  background-color: #fff;
+  font-size: 16px;
+  color: #333;
+  appearance: none;
+  cursor: pointer;
+}
+
+select:hover {
+  border-color: #ff7700;
+}
+
+select:focus {
+  outline: none;
+  border-color: #ff5100;
+}
+
+select option {
+  font-size: 16px;
+  color: #333;
+}
+
+select:disabled {
+  background-color: #f4f4f9;
+  color: #888;
+}
 
     .signup-container {
       background-color: #fff;
@@ -24,6 +62,7 @@
       width: 100%;
       max-width: 400px;
       text-align: center;
+      position: relative;
     }
 
     h1 {
@@ -33,7 +72,10 @@
     }
 
     input[type="email"],
-    input[type="password"] {
+    input[type="password"],
+    input[type="text"],
+    input[type="date"],
+    input[type="tel"] {
       width: 100%;
       padding: 10px;
       margin: 10px 0;
@@ -57,15 +99,60 @@
     button:hover {
       background-color: #ff5100;
     }
+
+    .loading {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 18px;
+      color: #ff7700;
+    }
+
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top: 4px solid #ff7700;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
   <div class="signup-container">
     <h1>Sign Up for Happy School</h1>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <input type="password" id="confirm-password" placeholder="Re-enter Password">
+    
+    <!-- Email and Password -->
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <input type="password" id="confirm-password" placeholder="Re-enter Password" required>
+    
+    <!-- Additional Fields -->
+    <input type="text" id="age" placeholder="Age" required>
+    <input type="text" id="gender" placeholder="Gender" required>
+    <input type="tel" id="phone" placeholder="Phone Number" required>
+    <input type="date" id="dob" placeholder="Date of Birth" required>
+    
+    <!-- School Dropdown Menu -->
+    <select id="school" required>
+      <option value="" disabled selected>Select your school</option>
+    </select>
+    
+    <!-- Sign Up Button -->
     <button id="register">Sign Up</button>
+    
+    <!-- Loading Spinner -->
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+    </div>
   </div>
 </body>
 </html>

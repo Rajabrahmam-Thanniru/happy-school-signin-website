@@ -1,51 +1,119 @@
-// Import the functions you need from the SDKs you need
+// Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 
-// Your Firebase configuration
+// Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyC2tv4165DJJ7Jx9lOai4AbeXvAl1NnuaU",
-    authDomain: "happyschool-99f85.firebaseapp.com",
-    databaseURL: "https://happyschool-99f85-default-rtdb.firebaseio.com",
-    projectId: "happyschool-99f85",
-    storageBucket: "happyschool-99f85.appspot.com",
-    messagingSenderId: "746962281225",
-    appId: "1:746962281225:web:dfe0364b17a93d8f5b29d8",
-    measurementId: "G-WQ77M4NHGG"
+  apiKey: "AIzaSyC2tv4165DJJ7Jx9lOai4AbeXvAl1NnuaU",
+  authDomain: "happyschool-99f85.firebaseapp.com",
+  databaseURL: "https://happyschool-99f85-default-rtdb.firebaseio.com",
+  projectId: "happyschool-99f85",
+  storageBucket: "happyschool-99f85.appspot.com",
+  messagingSenderId: "746962281225",
+  appId: "1:746962281225:web:dfe0364b17a93d8f5b29d8",
+  measurementId: "G-WQ77M4NHGG"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const analytics = getAnalytics(app);
+const db = getFirestore(app);
 
-const register = document.getElementById('register');
-register.addEventListener("click", function (event) {
-    event.preventDefault();
+// Populate the school dropdown
+async function populateSchoolsDropdown() {
+  const schoolDropdown = document.getElementById('school');
+  const schoolsSnapshot = await getDocs(collection(db, "Schools"));
 
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirm-password').value;
+  schoolsSnapshot.forEach((doc) => {
+    const school = doc.data().SchoolName; // Assuming each document has a 'SchoolName' field
+    const option = document.createElement('option');
+    option.value = doc.id; // Use the document ID to reference the school
+    option.text = school;
+    schoolDropdown.appendChild(option);
+  });
+}
 
-    // Check if the passwords match
-    if (password !== confirmPassword) {
-        alert("Passwords do not match. Please try again.");
-        return;
-    }
+// Call the function to populate dropdown on page load
+window.addEventListener('load', populateSchoolsDropdown);
 
-    if (email && password && confirmPassword) {
-        createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                // Signed in 
-                const user = userCredential.user;
-                alert("User Registered Successfully");
-            })
-            .catch((error) => {
-                const errorMessage = error.message;
-                alert("Error: " + errorMessage);
-            });
+// Handle registration
+document.getElementById('register').addEventListener("click", async function (event) {
+  event.preventDefault();
+
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  const confirmPassword = document.getElementById('confirm-password').value;
+  const age = document.getElementById('age').value;
+  const gender = document.getElementById('gender').value;
+  const phone = document.getElementById('phone').value;
+  const dob = document.getElementById('dob').value;
+  const schoolId = document.getElementById('school').value;
+
+  // Show loading indicator
+  const loading = document.getElementById('loading');
+  loading.style.display = 'flex'; // Show the loading spinner
+
+  if (password !== confirmPassword) {
+    alert("Passwords do not match. Please try again.");
+    loading.style.display = 'none';
+    return;
+  }
+
+  if (!email || !password || !confirmPassword || !schoolId) {
+    alert("Please fill in all fields.");
+    loading.style.display = 'none';
+    return;
+  }
+
+  try {
+    // Check the UsersCount field for the selected school
+    const schoolRef = doc(db, "Schools", schoolId);
+    const schoolSnapshot = await getDoc(schoolRef);
+
+    if (schoolSnapshot.exists()) {
+      const usersCount = schoolSnapshot.data().UsersCount;
+
+      if (usersCount > 0) {
+        // Proceed with user registration
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        const userRef = doc(db, "Users", email);
+await setDoc(userRef, {
+  // Initialize user data, if needed
+});
+
+await setDoc(doc(db, "Users", email, "userinfo", "userinfo"), {
+  email: email,
+  age: age,
+  gender: gender,
+  phone: phone,
+  dob: dob,
+  school: schoolSnapshot.data().SchoolName,
+  type: "user",
+});
+
+
+        // Decrease the UsersCount by 1
+        await updateDoc(schoolRef, {
+          UsersCount: usersCount - 1,
+        });
+        
+        alert("User registered successfully.");
+
+      } else {
+        // Alert if UsersCount is 0
+        alert("Sorry, this school is not accepting new registrations.");
+      }
+
     } else {
-        alert("Please fill in all fields.");
+      alert("Selected school not found.");
     }
+
+  } catch (error) {
+    alert("Error: " + error.message);
+  } finally {
+    loading.style.display = 'none'; // Hide loading indicator
+  }
 });
