@@ -73,6 +73,7 @@ document.getElementById('register').addEventListener("click", async function (ev
 
     if (schoolSnapshot.exists()) {
       const usersCount = schoolSnapshot.data().UsersCount;
+      const currentlyenrolled = schoolSnapshot.data().currentlyenrolled;
 
       if (usersCount > 0) {
         // Proceed with user registration
@@ -92,12 +93,14 @@ await setDoc(doc(db, "Users", email, "userinfo", "userinfo"), {
   dob: dob,
   school: schoolSnapshot.data().SchoolName,
   type: "user",
+  coins:10,
 });
 
 
         // Decrease the UsersCount by 1
         await updateDoc(schoolRef, {
           UsersCount: usersCount - 1,
+          currentlyenrolled:currentlyenrolled+1,
         });
         
         alert("User registered successfully.");
