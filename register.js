@@ -44,11 +44,11 @@ document.getElementById('register').addEventListener("click", async function (ev
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
   const confirmPassword = document.getElementById('confirm-password').value;
-  const age = document.getElementById('age').value;
   const gender = document.getElementById('gender').value;
   const phone = document.getElementById('phone').value;
-  const dob = document.getElementById('dob').value;
+  const Name = document.getElementById('Name').value;
   const schoolId = document.getElementById('school').value;
+  const role = document.getElementById('role').value; // Added role field
 
   // Show loading indicator
   const loading = document.getElementById('loading');
@@ -60,7 +60,7 @@ document.getElementById('register').addEventListener("click", async function (ev
     return;
   }
 
-  if (!email || !password || !confirmPassword || !schoolId) {
+  if (!email || !password || !confirmPassword || !schoolId || !role) { // Added role validation
     alert("Please fill in all fields.");
     loading.style.display = 'none';
     return;
@@ -81,28 +81,26 @@ document.getElementById('register').addEventListener("click", async function (ev
         const user = userCredential.user;
 
         const userRef = doc(db, "Users", email);
-await setDoc(userRef, {
-  // Initialize user data, if needed
-});
+        await setDoc(userRef, {
+          // Initialize user data, if needed
+        });
 
-await setDoc(doc(db, "Users", email, "userinfo", "userinfo"), {
-  email: email,
-  age: age,
-  gender: gender,
-  phone: phone,
-  dob: dob,
-  school: schoolSnapshot.data().SchoolName,
-  type: "user",
-  coins:10,
-});
+        await setDoc(doc(db, "Users", email, "userinfo", "userinfo"), {
+          email: email,
+          gender: gender,
+          phone: phone,
+          Name: Name,
+          school: schoolSnapshot.data().SchoolName,
+          role: role, // Store role (teacher/principal)
+          coins: 10,
+        });
 
-
-        // Decrease the UsersCount by 1
+        // Decrease the UsersCount by 1 and increase currently enrolled
         await updateDoc(schoolRef, {
           UsersCount: usersCount - 1,
-          currentlyenrolled:currentlyenrolled+1,
+          currentlyenrolled: currentlyenrolled + 1,
         });
-        
+
         alert("User registered successfully.");
 
       } else {

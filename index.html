@@ -22,37 +22,37 @@
       margin: 0;
     }
     select {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
-  background-color: #fff;
-  font-size: 16px;
-  color: #333;
-  appearance: none;
-  cursor: pointer;
-}
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+      background-color: #fff;
+      font-size: 16px;
+      color: #333;
+      appearance: none;
+      cursor: pointer;
+    }
 
-select:hover {
-  border-color: #ff7700;
-}
+    select:hover {
+      border-color: #ff7700;
+    }
 
-select:focus {
-  outline: none;
-  border-color: #ff5100;
-}
+    select:focus {
+      outline: none;
+      border-color: #ff5100;
+    }
 
-select option {
-  font-size: 16px;
-  color: #333;
-}
+    select option {
+      font-size: 16px;
+      color: #333;
+    }
 
-select:disabled {
-  background-color: #f4f4f9;
-  color: #888;
-}
+    select:disabled {
+      background-color: #f4f4f9;
+      color: #888;
+    }
 
     .signup-container {
       background-color: #fff;
@@ -136,14 +136,20 @@ select:disabled {
     <input type="password" id="confirm-password" placeholder="Re-enter Password" required>
     
     <!-- Additional Fields -->
-    <input type="text" id="age" placeholder="Age" required>
+    <input type="text" id="Name" placeholder="Name" required>
     <input type="text" id="gender" placeholder="Gender" required>
     <input type="tel" id="phone" placeholder="Phone Number" required>
-    <input type="date" id="dob" placeholder="Date of Birth" required>
     
     <!-- School Dropdown Menu -->
     <select id="school" required>
       <option value="" disabled selected>Select your school</option>
+    </select>
+
+    <!-- Role Dropdown Menu -->
+    <select id="role" required>
+      <option value="" disabled selected>Select your role</option>
+      <option value="teacher">Teacher</option>
+      <option value="principal">Principal</option>
     </select>
     
     <!-- Sign Up Button -->
